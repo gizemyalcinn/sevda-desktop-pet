@@ -1,0 +1,119 @@
+[gd_scene format=3 uid="uid://d2dax07rx3b1i"]
+
+[ext_resource type="Script" uid="uid://cvd05y167fugi" path="res://desktop_pet.gd" id="1_b35u2"]
+[ext_resource type="Texture2D" uid="uid://cuqew07mmfhfw" path="res://assets/sprites/idle/sevda_idle_aligned_2.png" id="2_fsrqt"]
+[ext_resource type="Texture2D" uid="uid://bb0a6i0ju4asp" path="res://assets/sprites/idle/sevda_happy.png" id="3_pod7j"]
+[ext_resource type="Texture2D" uid="uid://cvbkjie1myfb7" path="res://assets/sprites/idle/sevda_pecking_front_aligned.png" id="4_ka74a"]
+[ext_resource type="Texture2D" uid="uid://cu2ph2vuv8fdy" path="res://assets/sprites/idle/sevda_sleep.png" id="4_pod7j"]
+[ext_resource type="Texture2D" uid="uid://bpf4tsqf6h3vg" path="res://assets/sprites/idle/sevda_sleep_puffed.png" id="5_dv0nn"]
+[ext_resource type="Texture2D" uid="uid://csju42w5pkcwc" path="res://assets/sprites/sleepz/sleep_z_01.png" id="6_fabbr"]
+[ext_resource type="Texture2D" uid="uid://3w0edmt0asv4" path="res://assets/sprites/sleepz/sleep_z_02.png" id="7_ka74a"]
+[ext_resource type="Texture2D" uid="uid://udr5koyb6qx7" path="res://assets/sprites/sleepz/sleep_z_03.png" id="8_gfd2c"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_f6a36"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_fsrqt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_pod7j")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_fsrqt")
+}],
+"loop": 0,
+"name": &"blink",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_fsrqt")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 2.0
+}, {
+"frames": [{
+"duration": 3.0,
+"texture": ExtResource("4_ka74a")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_fsrqt")
+}],
+"loop": 0,
+"name": &"pecking",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_pod7j")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_dv0nn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_pod7j")
+}],
+"loop": 1,
+"name": &"sleep",
+"speed": 1.0
+}]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_t5jfb"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_fabbr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_ka74a")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_gfd2c")
+}],
+"loop": 1,
+"name": &"sleep_z",
+"speed": 1.5
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_f6a36"]
+radius = 61.0
+height = 212.0
+
+[node name="DesktopPet" type="Node2D" unique_id=821657881]
+script = ExtResource("1_b35u2")
+
+[node name="Timer" type="Timer" parent="." unique_id=1407403718]
+wait_time = 3.0
+one_shot = true
+
+[node name="Sprite2D" type="AnimatedSprite2D" parent="." unique_id=772739781]
+position = Vector2(150, 150)
+scale = Vector2(0.3, 0.3)
+sprite_frames = SubResource("SpriteFrames_f6a36")
+animation = &"pecking"
+
+[node name="BlinkTimer" type="Timer" parent="." unique_id=497023692]
+one_shot = true
+
+[node name="SleepZ" type="AnimatedSprite2D" parent="." unique_id=117999151]
+position = Vector2(153, 28)
+scale = Vector2(0.44824207, 0.4570312)
+sprite_frames = SubResource("SpriteFrames_t5jfb")
+animation = &"sleep_z"
+
+[node name="SleepTimer" type="Timer" parent="." unique_id=1573634539]
+one_shot = true
+
+[node name="ClickArea" type="Area2D" parent="." unique_id=1671416083]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ClickArea" unique_id=815858762]
+position = Vector2(103, 135)
+shape = SubResource("CapsuleShape2D_f6a36")
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="animation_finished" from="Sprite2D" to="." method="_on_sprite_2d_animation_finished"]
+[connection signal="timeout" from="BlinkTimer" to="." method="_on_blink_timer_timeout"]
+[connection signal="timeout" from="SleepTimer" to="." method="_on_sleep_timer_timeout"]
+[connection signal="input_event" from="ClickArea" to="." method="_on_click_area_input_event"]
