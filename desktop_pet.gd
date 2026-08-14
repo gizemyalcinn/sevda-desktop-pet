@@ -21,7 +21,8 @@ enum State {
 @onready var happy_bubble: Sprite2D = $HappyBubble
 @onready var happy_bubble_right: Sprite2D = $HappyBubbleRight
 
-@onready var pet_menu: PopupMenu = $PetMenu
+@onready var pet_popup: PopupPanel = $PetPopup
+@onready var menu_title: Label = $PetPopup/MarginContainer/VBoxContainer/MenuTitle
 
 var current_state: State = State.IDLE
 
@@ -33,6 +34,11 @@ var usable_rect: Rect2i
 
 func _ready() -> void:
 	print("Sevda uyandı!")
+
+	# Popup ana 240x240 pencerenin içine sıkışmasın.
+	get_viewport().gui_embed_subwindows = false
+
+	pet_popup.hide()
 
 	usable_rect = DisplayServer.screen_get_usable_rect()
 
@@ -59,8 +65,7 @@ func _ready() -> void:
 	happy_bubble_right.visible = false
 	sleep_z.visible = false
 	
-	pet_menu.add_item("Music", 0)
-	pet_menu.add_item("Pomodoro", 1)
+
 	
 	change_state(State.IDLE)
 
@@ -216,7 +221,7 @@ func start_move_wait() -> void:
 	await get_tree().create_timer(randf_range(15.0, 30.0)).timeout
 
 	if current_state == State.IDLE:
-		if randf() < 0.35:
+		if randf() < 0.55:
 
 			if randf() < 0.5:
 				direction = -1.0
@@ -248,12 +253,19 @@ func _on_click_area_input_event(
 			elif current_state == State.IDLE:
 				change_state(State.HAPPY)
 
+
 		# SAĞ TIK
 		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-			pet_menu.position = get_viewport().get_mouse_position()
-			pet_menu.popup()
 
+			var popup_size := Vector2i(320, 200)
 
+			pet_popup.popup(
+				Rect2i(
+					get_window().position + Vector2i(-40, -210),
+					popup_size
+	)
+)
+			
 func _on_sprite_2d_animation_finished() -> void:
 
 	if sevda.animation == "blink" and current_state == State.IDLE:
@@ -275,3 +287,9 @@ func show_happy_reaction() -> void:
 
 	if current_state == State.HAPPY:
 		change_state(State.IDLE)
+
+
+func _on_menu_title_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			pet_popup.start_drag()

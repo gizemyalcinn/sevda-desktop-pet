@@ -15,6 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://bhphpackb8tiv" path="res://chirp_bubble.png" id="10_gfd2c"]
 [ext_resource type="Texture2D" uid="uid://bn1gx7rpuj45y" path="res://assets/sprites/chirp_happy.png" id="12_22c2h"]
 [ext_resource type="Texture2D" uid="uid://be7gc5tt6i8xu" path="res://assets/sprites/chirp_bubble_right.png" id="15_wmci2"]
+[ext_resource type="FontFile" uid="uid://b4flgi0wtv71n" path="res://assets/fonts/rainyhearts.ttf" id="16_yukku"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_f6a36"]
 animations = [{
@@ -114,6 +115,54 @@ border_width_right = 4
 border_width_bottom = 4
 border_color = Color(0.9668779, 0.43292123, 0.7334576, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_y4bq8"]
+bg_color = Color(0.972549, 0.73333335, 0.8156863, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.8509804, 0.41960785, 0.60784316, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_poyv2"]
+bg_color = Color(0.8509804, 0.41960785, 0.60784316, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.6627451, 0.24705882, 0.42745098, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qnl2n"]
+bg_color = Color(0.93333334, 0.5764706, 0.70980394, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.7882353, 0.30980393, 0.50980395, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kyigy"]
+bg_color = Color(0.972549, 0.73333335, 0.8156863, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.8509804, 0.41960785, 0.60784316, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jbthq"]
+bg_color = Color(0.8509804, 0.41960785, 0.60784316, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.6627451, 0.24705882, 0.42745098, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_136ak"]
+bg_color = Color(0.93333334, 0.5764706, 0.70980394, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.7882353, 0.30980393, 0.50980395, 1)
+
 [node name="DesktopPet" type="Node2D" unique_id=821657881]
 script = ExtResource("1_b35u2")
 
@@ -167,6 +216,10 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_wmci2")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 96.0
+offset_bottom = 96.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 12
@@ -180,20 +233,37 @@ theme_override_constants/separation = 10
 
 [node name="MenuTitle" type="Label" parent="PetPopup/MarginContainer/VBoxContainer" unique_id=1183452490]
 layout_mode = 2
-text = "SEVDA MENU"
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 22
+text = "SEVDA'S  SERVICES"
 horizontal_alignment = 1
 
 [node name="MusicButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer" unique_id=1833088847]
 layout_mode = 2
-text = "MUSIC
+theme_override_colors/font_color = Color(0.47843137, 0.21176471, 0.34117648, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_y4bq8")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_poyv2")
+theme_override_styles/hover = SubResource("StyleBoxFlat_qnl2n")
+text = "♪  MUSIC
 "
 
 [node name="PomodoroButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer" unique_id=1567225374]
 layout_mode = 2
-text = " POMODORO"
+theme_override_colors/font_color = Color(0.47843137, 0.21176471, 0.34117648, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_kyigy")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_jbthq")
+theme_override_styles/hover = SubResource("StyleBoxFlat_136ak")
+text = "⏱  POMODORO"
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="animation_finished" from="Sprite2D" to="." method="_on_sprite_2d_animation_finished"]
 [connection signal="timeout" from="BlinkTimer" to="." method="_on_blink_timer_timeout"]
 [connection signal="timeout" from="SleepTimer" to="." method="_on_sleep_timer_timeout"]
 [connection signal="input_event" from="ClickArea" to="." method="_on_click_area_input_event"]
+[connection signal="gui_input" from="PetPopup/MarginContainer/VBoxContainer/MenuTitle" to="." method="_on_menu_title_gui_input"]
