@@ -187,6 +187,78 @@ border_width_right = 3
 border_width_bottom = 3
 border_color = Color(0.7882353, 0.30980393, 0.50980395, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m5xnv"]
+bg_color = Color(0.41960785, 0.2901961, 0.3529412, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.41960785, 0.2901961, 0.3529412, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lqs00"]
+bg_color = Color(0.32941177, 0.21960784, 0.26666668, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.32941177, 0.21960784, 0.26666668, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p8x67"]
+bg_color = Color(0.5176471, 0.34509805, 0.42352942, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.5176471, 0.34509805, 0.42352942, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p7od3"]
+bg_color = Color(0.41960785, 0.2901961, 0.3529412, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.41960785, 0.2901961, 0.3529412, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lof25"]
+bg_color = Color(0.32941177, 0.21960784, 0.26666668, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.32941177, 0.21960784, 0.26666668, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vby3f"]
+bg_color = Color(0.5176471, 0.34509805, 0.42352942, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.5176471, 0.34509805, 0.42352942, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c2xmk"]
+bg_color = Color(0.41960785, 0.2901961, 0.3529412, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.41960785, 0.2901961, 0.3529412, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ri3ad"]
+bg_color = Color(0.32941177, 0.21960784, 0.26666668, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.32941177, 0.21960784, 0.26666668, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ctm3t"]
+bg_color = Color(0.5176471, 0.34509805, 0.42352942, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.5176471, 0.34509805, 0.42352942, 1)
+
 [node name="DesktopPet" type="Node2D" unique_id=821657881]
 script = ExtResource("1_b35u2")
 
@@ -294,7 +366,7 @@ theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_f6a36")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_5pd38")
 theme_override_styles/hover = SubResource("StyleBoxFlat_t5jfb")
-text = "WATER REMINDER
+text = "💧 WATER TRACKER
 "
 
 [node name="WaterPanel" type="VBoxContainer" parent="PetPopup/MarginContainer/VBoxContainer" unique_id=1330151294]
@@ -304,30 +376,103 @@ layout_mode = 2
 [node name="WaterTitle" type="Label" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel" unique_id=678171442]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("16_yukku")
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 20
 text = "WATER TRACKER"
 
-[node name="GlassCount" type="Label" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel" unique_id=1961247940]
+[node name="WaterTotal" type="Label" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel" unique_id=1961247940]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 20
+text = "TODAY: 0 ML"
+
+[node name="PresetRow1" type="HBoxContainer" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel" unique_id=117156212]
+layout_mode = 2
+
+[node name="Water200Button" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow1" unique_id=1556328000]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("16_yukku")
 theme_override_font_sizes/font_size = 18
-text = "0 GLASSES"
+text = "200 ML"
 
-[node name="WaterControls" type="HBoxContainer" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel" unique_id=290644116]
+[node name="Water250Button" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow1" unique_id=1291432303]
 layout_mode = 2
-
-[node name="MinusButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterControls" unique_id=1141759769]
-layout_mode = 2
+theme_override_fonts/font = ExtResource("16_yukku")
 theme_override_font_sizes/font_size = 18
-text = "-"
+text = "250 ML"
 
-[node name="PlusButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterControls" unique_id=361522175]
+[node name="Water330Button" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow1" unique_id=1147421275]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("16_yukku")
 theme_override_font_sizes/font_size = 18
-text = "+"
+theme_override_styles/normal = SubResource("StyleBoxFlat_m5xnv")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_lqs00")
+theme_override_styles/hover = SubResource("StyleBoxFlat_p8x67")
+text = "330 ML"
 
-[node name="WaterBackButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel" unique_id=1818521968]
+[node name="PresetRow2" type="HBoxContainer" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel" unique_id=1550520909]
 layout_mode = 2
+
+[node name="Water500Button" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow2" unique_id=1426819832]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+text = "500 ML"
+
+[node name="Water400Button" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow2" unique_id=1090962015]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_p7od3")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_lof25")
+theme_override_styles/hover = SubResource("StyleBoxFlat_vby3f")
+text = "400 ML"
+
+[node name="Water750Button" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow2" unique_id=583207829]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_c2xmk")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_ri3ad")
+theme_override_styles/hover = SubResource("StyleBoxFlat_ctm3t")
+text = "750 ML"
+
+[node name="CustomWaterRow" type="HBoxContainer" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel" unique_id=1566543583]
+layout_mode = 2
+
+[node name="CustomMlInput" type="LineEdit" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel/CustomWaterRow" unique_id=658589795]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+placeholder_text = "CUSTOM ML"
+
+[node name="CustomAddButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel/CustomWaterRow" unique_id=1396810951]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 0.41
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+text = "ADD"
+
+[node name="BottomRow" type="HBoxContainer" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel" unique_id=243543918]
+layout_mode = 2
+
+[node name="RemoveLastButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel/BottomRow" unique_id=1579357661]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+text = "UNDO LAST"
+
+[node name="WaterBackButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel/BottomRow" unique_id=1818521968]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("16_yukku")
 theme_override_font_sizes/font_size = 18
 text = "BACK
@@ -340,6 +485,12 @@ text = "BACK
 [connection signal="input_event" from="ClickArea" to="." method="_on_click_area_input_event"]
 [connection signal="gui_input" from="PetPopup/MarginContainer/VBoxContainer/MenuTitle" to="." method="_on_menu_title_gui_input"]
 [connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterButton" to="." method="_on_water_button_pressed"]
-[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterControls/MinusButton" to="." method="_on_minus_button_pressed"]
-[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterControls/PlusButton" to="." method="_on_plus_button_pressed"]
-[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterBackButton" to="." method="_on_water_back_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow1/Water200Button" to="." method="_on_water_200_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow1/Water250Button" to="." method="_on_water_250_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow1/Water330Button" to="." method="_on_water_330_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow2/Water500Button" to="." method="_on_water_500_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow2/Water400Button" to="." method="_on_water_400_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow2/Water750Button" to="." method="_on_water_750_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/CustomWaterRow/CustomAddButton" to="." method="_on_custom_add_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/BottomRow/RemoveLastButton" to="." method="_on_remove_last_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/BottomRow/WaterBackButton" to="." method="_on_water_back_button_pressed"]

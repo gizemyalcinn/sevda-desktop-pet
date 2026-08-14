@@ -31,9 +31,20 @@ enum State {
 @onready var water_panel: VBoxContainer = $PetPopup/MarginContainer/VBoxContainer/WaterPanel
 @onready var water_back_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterBackButton
 
-@onready var glass_count: Label = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/GlassCount
-@onready var minus_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterControls/MinusButton
-@onready var plus_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterControls/PlusButton
+@onready var water_total: Label = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterTotal
+
+@onready var water_200_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow1/Water200Button
+@onready var water_250_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow1/Water250Button
+
+@onready var water_330_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow1/Water330Button
+@onready var water_500_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow2/Water500Button
+@onready var water_400_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow2/Water400Button
+@onready var water_750_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow2/Water750Button
+
+@onready var custom_ml_input: LineEdit = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/CustomWaterRow/CustomMlInput
+@onready var custom_add_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/CustomWaterRow/CustomAddButton
+
+@onready var remove_last_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/RemoveLastButton
 
 var current_state: State = State.IDLE
 
@@ -42,14 +53,18 @@ var window_x: float = 0.0
 
 var usable_rect: Rect2i
 
-var water_glasses: int = 0
+var water_ml: int = 0
+var water_entries: Array[int] = []
+
+const WATER_SAVE_PATH := "user://water_data.json"
 
 func _ready() -> void:
 	print("Sevda uyandı!")
 	
 	water_panel.visible = false
-	
-	update_water_count()
+
+	load_water_data()
+	update_water_total()
 
 	# Popup ana 240x240 pencerenin içine sıkışmasın.
 	get_viewport().gui_embed_subwindows = false
@@ -328,20 +343,125 @@ func _on_water_back_button_pressed() -> void:
 	pomodoro_button.visible = true
 	water_button.visible = true
 
-
-func _on_plus_button_pressed() -> void:
-	water_glasses += 1
-	update_water_count()
+func update_water_total() -> void:
+	water_total.text = "TODAY: " + str(water_ml) + " ML"
 
 
-func _on_minus_button_pressed() -> void:
-	if water_glasses > 0:
-		water_glasses -= 1
 
-	update_water_count()
+func _on_water_200_button_pressed() -> void:
+	add_water(200)
 
-func update_water_count() -> void:
-	if water_glasses == 1:
-		glass_count.text = "1 GLASS"
-	else:
-		glass_count.text = str(water_glasses) + " GLASSES"
+
+func _on_water_250_button_pressed() -> void:
+	add_water(250)
+
+
+func _on_water_330_button_pressed() -> void:
+	add_water(330)
+
+
+func _on_water_500_button_pressed() -> void:
+	add_water(500)
+
+func _on_water_400_button_pressed() -> void:
+	add_water(400)
+
+func _on_water_750_button_pressed() -> void:
+	add_water(750)
+	
+func add_water(amount_ml: int) -> void:
+	if amount_ml <= 0:
+		return
+
+	water_ml += amount_ml
+	water_entries.append(amount_ml)
+
+	update_water_total()
+	save_water_data()
+
+func _on_custom_add_button_pressed() -> void:
+	var text_value := custom_ml_input.text.strip_edges()
+
+	if not text_value.is_valid_int():
+		return
+
+	var amount_ml := int(text_value)
+
+	if amount_ml <= 0:
+		return
+
+	add_water(amount_ml)
+
+	custom_ml_input.clear()
+
+
+func _on_remove_last_button_pressed() -> void:
+	if water_entries.is_empty():
+		return
+
+	var last_amount: int = water_entries.pop_back()
+
+	water_ml -= last_amount
+
+	if water_ml < 0:
+		water_ml = 0
+
+	update_water_total()
+	save_water_data()
+
+func save_water_data() -> void:
+	var data := {
+		"date": Time.get_date_string_from_system(),
+		"water_ml": water_ml,
+		"entries": water_entries
+	}
+
+	var file := FileAccess.open(WATER_SAVE_PATH, FileAccess.WRITE)
+
+	if file == null:
+		print("Water data could not be saved.")
+		return
+
+	file.store_string(JSON.stringify(data))
+	file.close()
+
+
+func load_water_data() -> void:
+	if not FileAccess.file_exists(WATER_SAVE_PATH):
+		water_ml = 0
+		water_entries.clear()
+		return
+
+	var file := FileAccess.open(WATER_SAVE_PATH, FileAccess.READ)
+
+	if file == null:
+		return
+
+	var json_text := file.get_as_text()
+	file.close()
+
+	var data = JSON.parse_string(json_text)
+
+	if typeof(data) != TYPE_DICTIONARY:
+		water_ml = 0
+		water_entries.clear()
+		return
+
+	var today := Time.get_date_string_from_system()
+	var saved_date: String = str(data.get("date", ""))
+
+	# Yeni bir güne geçildiyse eski günlük veriyi temizle.
+	if saved_date != today:
+		water_ml = 0
+		water_entries.clear()
+		save_water_data()
+		return
+
+	water_ml = int(data.get("water_ml", 0))
+
+	water_entries.clear()
+
+	var saved_entries = data.get("entries", [])
+
+	for entry in saved_entries:
+		water_entries.append(int(entry))
