@@ -163,6 +163,30 @@ border_width_right = 3
 border_width_bottom = 3
 border_color = Color(0.7882353, 0.30980393, 0.50980395, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f6a36"]
+bg_color = Color(0.972549, 0.73333335, 0.8156863, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.8509804, 0.41960785, 0.60784316, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5pd38"]
+bg_color = Color(0.8509804, 0.41960785, 0.60784316, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.6627451, 0.24705882, 0.42745098, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t5jfb"]
+bg_color = Color(0.93333334, 0.5764706, 0.70980394, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.7882353, 0.30980393, 0.50980395, 1)
+
 [node name="DesktopPet" type="Node2D" unique_id=821657881]
 script = ExtResource("1_b35u2")
 
@@ -261,9 +285,61 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_jbthq")
 theme_override_styles/hover = SubResource("StyleBoxFlat_136ak")
 text = "⏱  POMODORO"
 
+[node name="WaterButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer" unique_id=1906916909]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.47843137, 0.21176471, 0.34117648, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/normal = SubResource("StyleBoxFlat_f6a36")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_5pd38")
+theme_override_styles/hover = SubResource("StyleBoxFlat_t5jfb")
+text = "WATER REMINDER
+"
+
+[node name="WaterPanel" type="VBoxContainer" parent="PetPopup/MarginContainer/VBoxContainer" unique_id=1330151294]
+visible = false
+layout_mode = 2
+
+[node name="WaterTitle" type="Label" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel" unique_id=678171442]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+text = "WATER TRACKER"
+
+[node name="GlassCount" type="Label" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel" unique_id=1961247940]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+text = "0 GLASSES"
+
+[node name="WaterControls" type="HBoxContainer" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel" unique_id=290644116]
+layout_mode = 2
+
+[node name="MinusButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterControls" unique_id=1141759769]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "-"
+
+[node name="PlusButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterControls" unique_id=361522175]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "+"
+
+[node name="WaterBackButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/WaterPanel" unique_id=1818521968]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+text = "BACK
+"
+
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="animation_finished" from="Sprite2D" to="." method="_on_sprite_2d_animation_finished"]
 [connection signal="timeout" from="BlinkTimer" to="." method="_on_blink_timer_timeout"]
 [connection signal="timeout" from="SleepTimer" to="." method="_on_sleep_timer_timeout"]
 [connection signal="input_event" from="ClickArea" to="." method="_on_click_area_input_event"]
 [connection signal="gui_input" from="PetPopup/MarginContainer/VBoxContainer/MenuTitle" to="." method="_on_menu_title_gui_input"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterButton" to="." method="_on_water_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterControls/MinusButton" to="." method="_on_minus_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterControls/PlusButton" to="." method="_on_plus_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterBackButton" to="." method="_on_water_back_button_pressed"]

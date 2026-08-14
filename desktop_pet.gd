@@ -24,6 +24,17 @@ enum State {
 @onready var pet_popup: PopupPanel = $PetPopup
 @onready var menu_title: Label = $PetPopup/MarginContainer/VBoxContainer/MenuTitle
 
+@onready var music_button: Button = $PetPopup/MarginContainer/VBoxContainer/MusicButton
+@onready var pomodoro_button: Button = $PetPopup/MarginContainer/VBoxContainer/PomodoroButton
+@onready var water_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterButton
+
+@onready var water_panel: VBoxContainer = $PetPopup/MarginContainer/VBoxContainer/WaterPanel
+@onready var water_back_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterBackButton
+
+@onready var glass_count: Label = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/GlassCount
+@onready var minus_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterControls/MinusButton
+@onready var plus_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterControls/PlusButton
+
 var current_state: State = State.IDLE
 
 var direction: float = -1.0
@@ -31,9 +42,14 @@ var window_x: float = 0.0
 
 var usable_rect: Rect2i
 
+var water_glasses: int = 0
 
 func _ready() -> void:
 	print("Sevda uyandı!")
+	
+	water_panel.visible = false
+	
+	update_water_count()
 
 	# Popup ana 240x240 pencerenin içine sıkışmasın.
 	get_viewport().gui_embed_subwindows = false
@@ -293,3 +309,39 @@ func _on_menu_title_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			pet_popup.start_drag()
+
+
+func _on_water_button_pressed() -> void:
+	menu_title.visible = false
+	music_button.visible = false
+	pomodoro_button.visible = false
+	water_button.visible = false
+
+	water_panel.visible = true
+
+
+func _on_water_back_button_pressed() -> void:
+	water_panel.visible = false
+
+	menu_title.visible = true
+	music_button.visible = true
+	pomodoro_button.visible = true
+	water_button.visible = true
+
+
+func _on_plus_button_pressed() -> void:
+	water_glasses += 1
+	update_water_count()
+
+
+func _on_minus_button_pressed() -> void:
+	if water_glasses > 0:
+		water_glasses -= 1
+
+	update_water_count()
+
+func update_water_count() -> void:
+	if water_glasses == 1:
+		glass_count.text = "1 GLASS"
+	else:
+		glass_count.text = str(water_glasses) + " GLASSES"
