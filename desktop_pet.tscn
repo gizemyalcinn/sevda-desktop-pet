@@ -1,7 +1,9 @@
 [gd_scene format=3 uid="uid://d2dax07rx3b1i"]
 
 [ext_resource type="Script" uid="uid://cvd05y167fugi" path="res://desktop_pet.gd" id="1_b35u2"]
+[ext_resource type="AudioStream" uid="uid://c2osilyt0rr1t" path="res://assets/sounds/work_done.mp3" id="2_e6mjb"]
 [ext_resource type="Texture2D" uid="uid://cuqew07mmfhfw" path="res://assets/sprites/idle/sevda_idle_aligned_2.png" id="2_fsrqt"]
+[ext_resource type="AudioStream" uid="uid://c3prgbb8u2fhk" path="res://assets/sounds/break_done.mp3" id="3_4fqam"]
 [ext_resource type="Texture2D" uid="uid://bb0a6i0ju4asp" path="res://assets/sprites/idle/sevda_happy.png" id="3_pod7j"]
 [ext_resource type="Texture2D" uid="uid://cvbkjie1myfb7" path="res://assets/sprites/idle/sevda_pecking_front_aligned.png" id="4_ka74a"]
 [ext_resource type="Texture2D" uid="uid://cu2ph2vuv8fdy" path="res://assets/sprites/idle/sevda_sleep.png" id="4_pod7j"]
@@ -16,6 +18,8 @@
 [ext_resource type="Texture2D" uid="uid://bn1gx7rpuj45y" path="res://assets/sprites/chirp_happy.png" id="12_22c2h"]
 [ext_resource type="Texture2D" uid="uid://be7gc5tt6i8xu" path="res://assets/sprites/chirp_bubble_right.png" id="15_wmci2"]
 [ext_resource type="FontFile" uid="uid://b4flgi0wtv71n" path="res://assets/fonts/rainyhearts.ttf" id="16_yukku"]
+[ext_resource type="Texture2D" uid="uid://d3w1o0d6emi7d" path="res://assets/pomodoro/sevda_get_ready.png" id="17_ltp44"]
+[ext_resource type="Texture2D" uid="uid://5srbsetjpmoq" path="res://assets/pomodoro/sevda_work.png" id="18_3bd0m"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_f6a36"]
 animations = [{
@@ -261,6 +265,8 @@ border_color = Color(0.5176471, 0.34509805, 0.42352942, 1)
 
 [node name="DesktopPet" type="Node2D" unique_id=821657881]
 script = ExtResource("1_b35u2")
+work_done_sound = ExtResource("2_e6mjb")
+break_done_sound = ExtResource("3_4fqam")
 
 [node name="Timer" type="Timer" parent="." unique_id=1407403718]
 wait_time = 3.0
@@ -478,12 +484,129 @@ theme_override_font_sizes/font_size = 18
 text = "BACK
 "
 
+[node name="PomodoroPanel" type="VBoxContainer" parent="PetPopup/MarginContainer/VBoxContainer" unique_id=148826949]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="PomodoroTitle" type="Label" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel" unique_id=477771750]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 20
+text = "POMODORO"
+
+[node name="PomodoroRow1" type="HBoxContainer" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel" unique_id=475889532]
+layout_mode = 2
+
+[node name="Pomodoro25Button" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroRow1" unique_id=1011544992]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+text = "25 / 5"
+
+[node name="Pomodoro30Button" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroRow1" unique_id=616550877]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+text = "30 / 5"
+
+[node name="PomodoroRow2" type="HBoxContainer" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel" unique_id=1025013698]
+layout_mode = 2
+
+[node name="Pomodoro50Button" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroRow2" unique_id=178796165]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+text = "50 / 10"
+
+[node name="Pomodoro60Button" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroRow2" unique_id=2140594283]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+text = " 60 / 10"
+
+[node name="PomodoroBackButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel" unique_id=1946478894]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_stretch_ratio = 2.26
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+text = "BACK"
+
+[node name="BackSpacer" type="Control" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel" unique_id=1973576097]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="PomodoroTimerView" type="VBoxContainer" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel" unique_id=1894449394]
+visible = false
+layout_mode = 2
+
+[node name="FocusSevda" type="TextureRect" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView" unique_id=473946912]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+texture = ExtResource("17_ltp44")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="WorkingSevda" type="TextureRect" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView" unique_id=105088467]
+visible = false
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 2
+texture = ExtResource("18_3bd0m")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PomodoroPhaseLabel" type="Label" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView" unique_id=1501053632]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 20
+text = "GET READY!"
+horizontal_alignment = 1
+
+[node name="PomodoroTimeLabel" type="Label" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView" unique_id=1302374118]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 20
+text = "05:00"
+horizontal_alignment = 1
+
+[node name="PomodoroSkipButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView" unique_id=95692227]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+text = "SKIP"
+
+[node name="PomodoroControls" type="HBoxContainer" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView" unique_id=1240725611]
+visible = false
+layout_mode = 2
+
+[node name="PomodoroPauseButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/PomodoroControls" unique_id=1233629439]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 20
+text = "PAUSE"
+
+[node name="PomodoroStopButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/PomodoroControls" unique_id=564801828]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 20
+text = "STOP"
+
+[node name="PomodoroTimer" type="Timer" parent="." unique_id=538518559]
+
+[node name="PomodoroSound" type="AudioStreamPlayer" parent="." unique_id=1191656209]
+
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="animation_finished" from="Sprite2D" to="." method="_on_sprite_2d_animation_finished"]
 [connection signal="timeout" from="BlinkTimer" to="." method="_on_blink_timer_timeout"]
 [connection signal="timeout" from="SleepTimer" to="." method="_on_sleep_timer_timeout"]
 [connection signal="input_event" from="ClickArea" to="." method="_on_click_area_input_event"]
 [connection signal="gui_input" from="PetPopup/MarginContainer/VBoxContainer/MenuTitle" to="." method="_on_menu_title_gui_input"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/PomodoroButton" to="." method="_on_pomodoro_button_pressed"]
 [connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterButton" to="." method="_on_water_button_pressed"]
 [connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow1/Water200Button" to="." method="_on_water_200_button_pressed"]
 [connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow1/Water250Button" to="." method="_on_water_250_button_pressed"]
@@ -494,3 +617,9 @@ text = "BACK
 [connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/CustomWaterRow/CustomAddButton" to="." method="_on_custom_add_button_pressed"]
 [connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/BottomRow/RemoveLastButton" to="." method="_on_remove_last_button_pressed"]
 [connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/BottomRow/WaterBackButton" to="." method="_on_water_back_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroRow1/Pomodoro25Button" to="." method="_on_pomodoro_25_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroBackButton" to="." method="_on_pomodoro_back_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/PomodoroSkipButton" to="." method="_on_pomodoro_skip_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/PomodoroControls/PomodoroPauseButton" to="." method="_on_pomodoro_pause_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/PomodoroControls/PomodoroStopButton" to="." method="_on_pomodoro_stop_button_pressed"]
+[connection signal="timeout" from="PomodoroTimer" to="." method="_on_pomodoro_timer_timeout"]

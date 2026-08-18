@@ -46,6 +46,28 @@ enum State {
 
 @onready var remove_last_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/RemoveLastButton
 
+@onready var pomodoro_panel: VBoxContainer = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel
+@onready var pomodoro_back_button: Button = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroBackButton
+
+@onready var pomodoro_timer: Timer = $PomodoroTimer
+
+@onready var pomodoro_timer_view: VBoxContainer = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView
+@onready var pomodoro_phase_label: Label = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/PomodoroPhaseLabel
+@onready var pomodoro_time_label: Label = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/PomodoroTimeLabel
+@onready var pomodoro_skip_button: Button = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/PomodoroSkipButton
+
+@onready var focus_sevda: TextureRect = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/FocusSevda
+@onready var working_sevda: TextureRect = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/WorkingSevda
+
+@onready var pomodoro_controls: HBoxContainer = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/PomodoroControls
+@onready var pomodoro_pause_button: Button = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/PomodoroControls/PomodoroPauseButton
+@onready var pomodoro_stop_button: Button = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/PomodoroControls/PomodoroStopButton
+
+@onready var pomodoro_sound: AudioStreamPlayer = $PomodoroSound
+
+@export var work_done_sound: AudioStream
+@export var break_done_sound: AudioStream
+
 var current_state: State = State.IDLE
 
 var direction: float = -1.0
@@ -57,10 +79,25 @@ var water_ml: int = 0
 var water_entries: Array[int] = []
 
 const WATER_SAVE_PATH := "user://water_data.json"
+enum PomodoroState {
+	NONE,
+	PREPARE,
+	WORK,
+	BREAK
+}
+
+var pomodoro_state: PomodoroState = PomodoroState.NONE
+
+var pomodoro_work_seconds: int = 0
+var pomodoro_break_seconds: int = 0
+var pomodoro_remaining_seconds: int = 0
+
+var pomodoro_paused: bool = false
 
 func _ready() -> void:
 	print("Sevda uyandı!")
 	
+	pomodoro_panel.visible = false
 	water_panel.visible = false
 
 	load_water_data()
@@ -465,3 +502,202 @@ func load_water_data() -> void:
 
 	for entry in saved_entries:
 		water_entries.append(int(entry))
+
+
+func _on_pomodoro_button_pressed() -> void:
+	menu_title.visible = false
+	music_button.visible = false
+	pomodoro_button.visible = false
+	water_button.visible = false
+	water_panel.visible = false
+
+	pomodoro_panel.visible = true
+
+
+func _on_pomodoro_back_button_pressed() -> void:
+	pomodoro_panel.visible = false
+
+	menu_title.visible = true
+	music_button.visible = true
+	pomodoro_button.visible = true
+	water_button.visible = true
+
+
+func _on_pomodoro_25_button_pressed() -> void:
+	start_pomodoro(25, 5)
+
+func start_pomodoro(work_minutes: int, break_minutes: int) -> void:
+	pomodoro_work_seconds = 10
+	pomodoro_break_seconds = 5
+	pomodoro_remaining_seconds = 5
+	
+	#pomodoro_work_seconds = work_minutes * 60
+	
+	#pomodoro_break_seconds = break_minutes * 60
+
+	pomodoro_state = PomodoroState.PREPARE
+	#pomodoro_remaining_seconds = 5 * 60
+
+	focus_sevda.visible = true
+	working_sevda.visible = false
+
+	pomodoro_skip_button.visible = true
+	pomodoro_controls.visible = false
+	pomodoro_paused = false
+
+	show_pomodoro_timer_view()
+	update_pomodoro_display()
+
+	pomodoro_timer.start()
+	
+func show_pomodoro_timer_view() -> void:
+	$PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroRow1.visible = false
+	$PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroRow2.visible = false
+	pomodoro_back_button.visible = false
+
+	pomodoro_timer_view.visible = true
+	
+func update_pomodoro_display() -> void:
+	var minutes := pomodoro_remaining_seconds / 60
+	var seconds := pomodoro_remaining_seconds % 60
+
+	pomodoro_time_label.text = "%02d:%02d" % [minutes, seconds]
+
+	match pomodoro_state:
+		PomodoroState.PREPARE:
+			pomodoro_phase_label.text = "GET READY!"
+		PomodoroState.WORK:
+			pomodoro_phase_label.text = "WORKING TIME!"
+		PomodoroState.BREAK:
+			pomodoro_phase_label.text = "BREAK TIME!"
+
+func _on_pomodoro_timer_timeout() -> void:
+	if pomodoro_state == PomodoroState.NONE:
+		return
+
+	pomodoro_remaining_seconds -= 1
+
+	if pomodoro_remaining_seconds <= 0:
+
+		if pomodoro_state == PomodoroState.PREPARE:
+			start_work_phase()
+			return
+
+		elif pomodoro_state == PomodoroState.WORK:
+			play_work_done_sound()
+			start_break_phase()
+			return
+
+		elif pomodoro_state == PomodoroState.BREAK:
+			play_break_done_sound()
+			finish_pomodoro_cycle()
+			return
+
+	update_pomodoro_display()
+
+
+func _on_pomodoro_skip_button_pressed() -> void:
+	if pomodoro_state == PomodoroState.PREPARE:
+		start_work_phase()
+		
+func start_work_phase() -> void:
+	pomodoro_state = PomodoroState.WORK
+	pomodoro_remaining_seconds = pomodoro_work_seconds
+	pomodoro_paused = false
+
+	focus_sevda.visible = false
+	working_sevda.visible = true
+
+	pomodoro_skip_button.visible = false
+	pomodoro_controls.visible = true
+	pomodoro_pause_button.text = "PAUSE"
+
+	update_pomodoro_display()
+
+	if pomodoro_timer.is_stopped():
+		pomodoro_timer.start()
+
+
+func _on_pomodoro_pause_button_pressed() -> void:
+	if pomodoro_state == PomodoroState.NONE:
+		return
+
+	pomodoro_paused = not pomodoro_paused
+
+	if pomodoro_paused:
+		pomodoro_timer.stop()
+		pomodoro_pause_button.text = "RESUME"
+	else:
+		pomodoro_timer.start()
+		pomodoro_pause_button.text = "PAUSE"
+
+func _on_pomodoro_stop_button_pressed() -> void:
+	pomodoro_timer.stop()
+
+	pomodoro_state = PomodoroState.NONE
+	pomodoro_remaining_seconds = 0
+	pomodoro_paused = false
+
+	focus_sevda.visible = false
+	working_sevda.visible = false
+	pomodoro_timer_view.visible = false
+
+	$PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroRow1.visible = true
+	$PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroRow2.visible = true
+	pomodoro_back_button.visible = true
+	
+func start_break_phase() -> void:
+	pomodoro_state = PomodoroState.BREAK
+	pomodoro_remaining_seconds = pomodoro_break_seconds
+	pomodoro_paused = false
+
+	focus_sevda.visible = false
+	working_sevda.visible = false
+
+	pomodoro_skip_button.visible = false
+	pomodoro_controls.visible = true
+	pomodoro_pause_button.text = "PAUSE"
+
+	update_pomodoro_display()
+
+	if pomodoro_timer.is_stopped():
+		pomodoro_timer.start()
+
+func finish_pomodoro_cycle() -> void:
+	pomodoro_timer.stop()
+
+	pomodoro_state = PomodoroState.NONE
+	pomodoro_remaining_seconds = 0
+	pomodoro_paused = false
+
+	focus_sevda.visible = false
+	working_sevda.visible = false
+
+	pomodoro_skip_button.visible = false
+	pomodoro_controls.visible = false
+	pomodoro_timer_view.visible = false
+
+	$PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroRow1.visible = true
+	$PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroRow2.visible = true
+	pomodoro_back_button.visible = true
+
+func play_work_done_sound() -> void:
+	print("WORK DONE SOUND: ", work_done_sound)
+
+	if work_done_sound == null:
+		print("HATA: work_done_sound boş!")
+		return
+
+	pomodoro_sound.stream = work_done_sound
+	pomodoro_sound.play()
+
+
+func play_break_done_sound() -> void:
+	print("BREAK DONE SOUND: ", break_done_sound)
+
+	if break_done_sound == null:
+		print("HATA: break_done_sound boş!")
+		return
+
+	pomodoro_sound.stream = break_done_sound
+	pomodoro_sound.play()
