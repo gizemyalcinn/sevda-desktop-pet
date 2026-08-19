@@ -310,7 +310,7 @@ one_shot = true
 position = Vector2(158, 174)
 scale = Vector2(0.30085626, 0.27222222)
 sprite_frames = SubResource("SpriteFrames_f6a36")
-animation = &"idle"
+animation = &"sleep"
 
 [node name="BlinkTimer" type="Timer" parent="." unique_id=497023692]
 one_shot = true
@@ -722,6 +722,12 @@ layout_mode = 2
 layout_mode = 2
 theme_override_fonts/font = ExtResource("16_yukku")
 theme_override_font_sizes/font_size = 22
+
+[node name="SleepZLeftMarker" type="Marker2D" parent="." unique_id=191916273]
+position = Vector2(150, 61)
+
+[node name="SleepZRightMarker" type="Marker2D" parent="." unique_id=764205286]
+position = Vector2(277, 62)
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="animation_finished" from="Sprite2D" to="." method="_on_sprite_2d_animation_finished"]

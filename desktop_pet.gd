@@ -77,6 +77,9 @@ enum State {
 @onready var water_reminder_bubble: PanelContainer = $WaterReminderBubble
 @onready var water_reminder_label: Label = $WaterReminderBubble/MarginContainer/WaterReminderLabel
 
+@onready var sleep_z_left_marker: Marker2D = $SleepZLeftMarker
+@onready var sleep_z_right_marker: Marker2D = $SleepZRightMarker
+
 @export var work_done_sound: AudioStream
 @export var break_done_sound: AudioStream
 
@@ -232,16 +235,18 @@ func change_state(new_state: State) -> void:
 			peck_bubble.visible = false
 			happy_bubble.visible = false
 			happy_bubble_right.visible = false
+			water_reminder_bubble.visible = false
 
 			sevda.play("sleep")
 
 			if sevda.flip_h:
-				sleep_z.position = sevda.position + Vector2(-70, -55)
-				sleep_z.flip_h = false
+				print("SLEEP: LEFT FACING -> RIGHT MARKER")
+				sleep_z.position = sleep_z_right_marker.position
 			else:
-				sleep_z.position = sevda.position + Vector2(70, -55)
-				sleep_z.flip_h = true
+				print("SLEEP: RIGHT FACING -> LEFT MARKER")
+				sleep_z.position = sleep_z_left_marker.position
 
+			sleep_z.flip_h = false
 			sleep_z.visible = true
 			sleep_z.play("sleep_z")
 
@@ -838,6 +843,10 @@ func _on_water_reminder_timer_timeout() -> void:
 	show_water_reminder()
 	
 func show_water_reminder() -> void:
+	if current_state == State.SLEEPING:
+		start_water_reminder_timer()
+		return
+
 	if water_reminder_messages.is_empty():
 		return
 
