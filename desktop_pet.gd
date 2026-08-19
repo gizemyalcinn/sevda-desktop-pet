@@ -27,6 +27,11 @@ enum State {
 @onready var music_button: Button = $PetPopup/MarginContainer/VBoxContainer/MusicButton
 @onready var pomodoro_button: Button = $PetPopup/MarginContainer/VBoxContainer/PomodoroButton
 @onready var water_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterButton
+@onready var exit_button: Button = $PetPopup/MarginContainer/VBoxContainer/ExitButton
+
+@onready var exit_panel: VBoxContainer = $PetPopup/MarginContainer/VBoxContainer/ExitPanel
+@onready var exit_cancel_button: Button = $PetPopup/MarginContainer/VBoxContainer/ExitPanel/ExitControls/ExitCancelButton
+@onready var exit_confirm_button: Button = $PetPopup/MarginContainer/VBoxContainer/ExitPanel/ExitControls/ExitConfirmButton
 
 @onready var water_panel: VBoxContainer = $PetPopup/MarginContainer/VBoxContainer/WaterPanel
 @onready var water_back_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/WaterBackButton
@@ -47,7 +52,7 @@ enum State {
 @onready var remove_last_button: Button = $PetPopup/MarginContainer/VBoxContainer/WaterPanel/RemoveLastButton
 
 @onready var pomodoro_panel: VBoxContainer = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel
-@onready var pomodoro_back_button: Button = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroBackButton
+@onready var pomodoro_back_button: Button = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroBottomRow/PomodoroBackButton
 
 @onready var pomodoro_timer: Timer = $PomodoroTimer
 
@@ -58,12 +63,19 @@ enum State {
 
 @onready var focus_sevda: TextureRect = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/FocusSevda
 @onready var working_sevda: TextureRect = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/WorkingSevda
+@onready var break_sevda: TextureRect = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/BreakSevda
 
 @onready var pomodoro_controls: HBoxContainer = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/PomodoroControls
 @onready var pomodoro_pause_button: Button = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/PomodoroControls/PomodoroPauseButton
 @onready var pomodoro_stop_button: Button = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroTimerView/PomodoroControls/PomodoroStopButton
 
 @onready var pomodoro_sound: AudioStreamPlayer = $PomodoroSound
+@onready var set_input: LineEdit = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroBottomRow/SetRow/SetInput
+@onready var pomodoro_bottom_row: HBoxContainer = $PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroBottomRow
+
+@onready var water_reminder_timer: Timer = $WaterReminderTimer
+@onready var water_reminder_bubble: PanelContainer = $WaterReminderBubble
+@onready var water_reminder_label: Label = $WaterReminderBubble/MarginContainer/WaterReminderLabel
 
 @export var work_done_sound: AudioStream
 @export var break_done_sound: AudioStream
@@ -72,6 +84,7 @@ var current_state: State = State.IDLE
 
 var direction: float = -1.0
 var window_x: float = 0.0
+
 
 var usable_rect: Rect2i
 
@@ -93,13 +106,29 @@ var pomodoro_break_seconds: int = 0
 var pomodoro_remaining_seconds: int = 0
 
 var pomodoro_paused: bool = false
+var pomodoro_total_sets: int = 1
+var pomodoro_current_set: int = 1
+
+const MAIN_POPUP_SIZE := Vector2i(320, 200)
+var water_reminder_messages: Array[String] = [
+	"TIME FOR SOME WATER!",
+	"HYDRATION CHECK!",
+	"GO GRAB SOME WATER!",
+	"DON'T FORGET TO DRINK!",
+	"A LITTLE WATER BREAK?",
+	"YOUR WATER IS WAITING!"
+]
 
 func _ready() -> void:
 	print("Sevda uyandı!")
 	
+	exit_panel.visible = false
 	pomodoro_panel.visible = false
 	water_panel.visible = false
-
+	
+	water_reminder_bubble.visible = false
+	start_water_reminder_timer()
+	
 	load_water_data()
 	update_water_total()
 
@@ -206,6 +235,13 @@ func change_state(new_state: State) -> void:
 
 			sevda.play("sleep")
 
+			if sevda.flip_h:
+				sleep_z.position = sevda.position + Vector2(-70, -55)
+				sleep_z.flip_h = false
+			else:
+				sleep_z.position = sevda.position + Vector2(70, -55)
+				sleep_z.flip_h = true
+
 			sleep_z.visible = true
 			sleep_z.play("sleep_z")
 
@@ -310,30 +346,39 @@ func _on_click_area_input_event(
 	_shape_idx: int
 ) -> void:
 
-	if event is InputEventMouseButton:
+	if not event is InputEventMouseButton:
+		return
 
-		# SOL TIK
-		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-
-			if current_state == State.SLEEPING:
-				change_state(State.PECKING)
-
-			elif current_state == State.IDLE:
-				change_state(State.HAPPY)
+	if not event.pressed:
+		return
 
 
-		# SAĞ TIK
-		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+	# SAĞ TIK
+	if event.button_index == MOUSE_BUTTON_RIGHT:
 
-			var popup_size := Vector2i(320, 200)
+		# Uyuyorsa önce uyandır
+		if current_state == State.SLEEPING:
+			change_state(State.IDLE)
 
-			pet_popup.popup(
-				Rect2i(
-					get_window().position + Vector2i(-40, -210),
-					popup_size
-	)
-)
-			
+		# Her durumda menüyü aç
+		pet_popup.popup(
+			Rect2i(
+				get_window().position + Vector2i(-40, -210),
+				MAIN_POPUP_SIZE
+			)
+		)
+
+		return
+
+
+	# SOL TIK
+	if event.button_index == MOUSE_BUTTON_LEFT:
+
+		if current_state == State.SLEEPING:
+			change_state(State.PECKING)
+
+		elif current_state == State.IDLE:
+			change_state(State.HAPPY)
 func _on_sprite_2d_animation_finished() -> void:
 
 	if sevda.animation == "blink" and current_state == State.IDLE:
@@ -368,6 +413,7 @@ func _on_water_button_pressed() -> void:
 	music_button.visible = false
 	pomodoro_button.visible = false
 	water_button.visible = false
+	exit_button.visible = false
 
 	water_panel.visible = true
 
@@ -379,6 +425,10 @@ func _on_water_back_button_pressed() -> void:
 	music_button.visible = true
 	pomodoro_button.visible = true
 	water_button.visible = true
+	exit_button.visible = true
+
+	await get_tree().process_frame
+	pet_popup.size = MAIN_POPUP_SIZE
 
 func update_water_total() -> void:
 	water_total.text = "TODAY: " + str(water_ml) + " ML"
@@ -509,8 +559,9 @@ func _on_pomodoro_button_pressed() -> void:
 	music_button.visible = false
 	pomodoro_button.visible = false
 	water_button.visible = false
-	water_panel.visible = false
+	exit_button.visible = false
 
+	water_panel.visible = false
 	pomodoro_panel.visible = true
 
 
@@ -521,25 +572,43 @@ func _on_pomodoro_back_button_pressed() -> void:
 	music_button.visible = true
 	pomodoro_button.visible = true
 	water_button.visible = true
+	exit_button.visible = true
+
+	await get_tree().process_frame
+	pet_popup.size = MAIN_POPUP_SIZE
 
 
 func _on_pomodoro_25_button_pressed() -> void:
 	start_pomodoro(25, 5)
 
+func _on_pomodoro_30_button_pressed() -> void:
+	start_pomodoro(30, 5)
+
+func _on_pomodoro_50_button_pressed() -> void:
+	start_pomodoro(50, 10)
+
+func _on_pomodoro_60_button_pressed() -> void:
+	start_pomodoro(60, 10)
+
 func start_pomodoro(work_minutes: int, break_minutes: int) -> void:
-	pomodoro_work_seconds = 10
-	pomodoro_break_seconds = 5
-	pomodoro_remaining_seconds = 5
-	
-	#pomodoro_work_seconds = work_minutes * 60
-	
-	#pomodoro_break_seconds = break_minutes * 60
+	var set_text := set_input.text.strip_edges()
+
+	if set_text.is_valid_int():
+		pomodoro_total_sets = max(int(set_text), 1)
+	else:
+		pomodoro_total_sets = 1
+
+	pomodoro_current_set = 1
+
+	pomodoro_work_seconds = work_minutes * 60
+	pomodoro_break_seconds = break_minutes * 60
 
 	pomodoro_state = PomodoroState.PREPARE
-	#pomodoro_remaining_seconds = 5 * 60
+	pomodoro_remaining_seconds = 5 * 60
 
 	focus_sevda.visible = true
 	working_sevda.visible = false
+	break_sevda.visible = false
 
 	pomodoro_skip_button.visible = true
 	pomodoro_controls.visible = false
@@ -553,8 +622,8 @@ func start_pomodoro(work_minutes: int, break_minutes: int) -> void:
 func show_pomodoro_timer_view() -> void:
 	$PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroRow1.visible = false
 	$PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroRow2.visible = false
-	pomodoro_back_button.visible = false
 
+	pomodoro_bottom_row.visible = false
 	pomodoro_timer_view.visible = true
 	
 func update_pomodoro_display() -> void:
@@ -567,9 +636,9 @@ func update_pomodoro_display() -> void:
 		PomodoroState.PREPARE:
 			pomodoro_phase_label.text = "GET READY!"
 		PomodoroState.WORK:
-			pomodoro_phase_label.text = "WORKING TIME!"
+			pomodoro_phase_label.text = "WORKING TIME!  " + str(pomodoro_current_set) + "/" + str(pomodoro_total_sets)
 		PomodoroState.BREAK:
-			pomodoro_phase_label.text = "BREAK TIME!"
+			pomodoro_phase_label.text = "BREAK TIME!  " + str(pomodoro_current_set) + "/" + str(pomodoro_total_sets)
 
 func _on_pomodoro_timer_timeout() -> void:
 	if pomodoro_state == PomodoroState.NONE:
@@ -585,12 +654,20 @@ func _on_pomodoro_timer_timeout() -> void:
 
 		elif pomodoro_state == PomodoroState.WORK:
 			play_work_done_sound()
+
+			# Son set bittiyse artık mola yok.
+			if pomodoro_current_set >= pomodoro_total_sets:
+				finish_pomodoro_cycle()
+				return
+
 			start_break_phase()
 			return
 
 		elif pomodoro_state == PomodoroState.BREAK:
 			play_break_done_sound()
-			finish_pomodoro_cycle()
+
+			pomodoro_current_set += 1
+			start_work_phase()
 			return
 
 	update_pomodoro_display()
@@ -607,6 +684,7 @@ func start_work_phase() -> void:
 
 	focus_sevda.visible = false
 	working_sevda.visible = true
+	break_sevda.visible = false
 
 	pomodoro_skip_button.visible = false
 	pomodoro_controls.visible = true
@@ -640,11 +718,18 @@ func _on_pomodoro_stop_button_pressed() -> void:
 
 	focus_sevda.visible = false
 	working_sevda.visible = false
+	break_sevda.visible = false
 	pomodoro_timer_view.visible = false
 
 	$PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroRow1.visible = true
 	$PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroRow2.visible = true
-	pomodoro_back_button.visible = true
+	pomodoro_bottom_row.visible = true
+
+	# İçerik önce küçülsün
+	await get_tree().process_frame
+
+	# Popup Pomodoro ekranının büyük boyutunda kalmasın
+	pet_popup.size = MAIN_POPUP_SIZE
 	
 func start_break_phase() -> void:
 	pomodoro_state = PomodoroState.BREAK
@@ -653,6 +738,7 @@ func start_break_phase() -> void:
 
 	focus_sevda.visible = false
 	working_sevda.visible = false
+	break_sevda.visible = true
 
 	pomodoro_skip_button.visible = false
 	pomodoro_controls.visible = true
@@ -672,6 +758,7 @@ func finish_pomodoro_cycle() -> void:
 
 	focus_sevda.visible = false
 	working_sevda.visible = false
+	break_sevda.visible = false
 
 	pomodoro_skip_button.visible = false
 	pomodoro_controls.visible = false
@@ -679,7 +766,13 @@ func finish_pomodoro_cycle() -> void:
 
 	$PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroRow1.visible = true
 	$PetPopup/MarginContainer/VBoxContainer/PomodoroPanel/PomodoroRow2.visible = true
-	pomodoro_back_button.visible = true
+	pomodoro_bottom_row.visible = true
+
+	
+	await get_tree().process_frame
+
+
+	pet_popup.size = MAIN_POPUP_SIZE
 
 func play_work_done_sound() -> void:
 	print("WORK DONE SOUND: ", work_done_sound)
@@ -701,3 +794,61 @@ func play_break_done_sound() -> void:
 
 	pomodoro_sound.stream = break_done_sound
 	pomodoro_sound.play()
+
+
+func _on_exit_button_pressed() -> void:
+	menu_title.visible = false
+	music_button.visible = false
+	pomodoro_button.visible = false
+	water_button.visible = false
+	exit_button.visible = false
+
+	water_panel.visible = false
+	pomodoro_panel.visible = false
+
+	exit_panel.visible = true
+
+
+func _on_exit_cancel_button_pressed() -> void:
+	exit_panel.visible = false
+
+	menu_title.visible = true
+	music_button.visible = true
+	pomodoro_button.visible = true
+	water_button.visible = true
+	exit_button.visible = true
+
+	await get_tree().process_frame
+	pet_popup.size = MAIN_POPUP_SIZE
+
+
+func _on_exit_confirm_button_pressed() -> void:
+	get_tree().quit()
+
+func start_water_reminder_timer() -> void:
+	# TEST için şimdilik 15–25 saniye
+	water_reminder_timer.wait_time = randf_range(15.0, 25.0)
+	water_reminder_timer.start()
+
+func _on_water_reminder_timer_timeout() -> void:
+	if current_state == State.SLEEPING:
+		start_water_reminder_timer()
+		return
+
+	show_water_reminder()
+	
+func show_water_reminder() -> void:
+	if water_reminder_messages.is_empty():
+		return
+
+	water_reminder_label.text = water_reminder_messages.pick_random()
+	water_reminder_bubble.visible = true
+
+	hide_water_reminder_later()
+
+func hide_water_reminder_later() -> void:
+	await get_tree().create_timer(5.0).timeout
+
+	water_reminder_bubble.visible = false
+
+	start_water_reminder_timer()
