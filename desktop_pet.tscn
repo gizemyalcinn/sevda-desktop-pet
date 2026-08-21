@@ -9,10 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://cu2ph2vuv8fdy" path="res://assets/sprites/idle/sevda_sleep.png" id="4_pod7j"]
 [ext_resource type="Texture2D" uid="uid://wll57dng1qbs" path="res://assets/sprites/idle/sevda_happy_visual_match.png" id="4_umc0h"]
 [ext_resource type="Texture2D" uid="uid://bpf4tsqf6h3vg" path="res://assets/sprites/idle/sevda_sleep_puffed.png" id="5_dv0nn"]
-[ext_resource type="Texture2D" uid="uid://csju42w5pkcwc" path="res://assets/sprites/sleepz/sleep_z_01.png" id="6_fabbr"]
-[ext_resource type="Texture2D" uid="uid://3w0edmt0asv4" path="res://assets/sprites/sleepz/sleep_z_02.png" id="7_ka74a"]
 [ext_resource type="Texture2D" uid="uid://cd5g7fddmp2n" path="res://assets/sprites/sevda_walk1_idle_matched.png" id="8_0bnjx"]
-[ext_resource type="Texture2D" uid="uid://udr5koyb6qx7" path="res://assets/sprites/sleepz/sleep_z_03.png" id="8_gfd2c"]
 [ext_resource type="Texture2D" uid="uid://gygoqftykt1" path="res://assets/sprites/sevda_walk2_idle_matched.png" id="9_wmci2"]
 [ext_resource type="Texture2D" uid="uid://bhphpackb8tiv" path="res://chirp_bubble.png" id="10_gfd2c"]
 [ext_resource type="Texture2D" uid="uid://bn1gx7rpuj45y" path="res://assets/sprites/chirp_happy.png" id="12_22c2h"]
@@ -90,23 +87,6 @@ animations = [{
 "loop": 1,
 "name": &"walk",
 "speed": 4.0
-}]
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_t5jfb"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("6_fabbr")
-}, {
-"duration": 1.0,
-"texture": ExtResource("7_ka74a")
-}, {
-"duration": 1.0,
-"texture": ExtResource("8_gfd2c")
-}],
-"loop": 1,
-"name": &"sleep_z",
-"speed": 1.5
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_f6a36"]
@@ -289,6 +269,9 @@ border_width_right = 3
 border_width_bottom = 3
 border_color = Color(0.9411765, 0.54509807, 0.6666667, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2sjgo"]
+bg_color = Color(0.9098039, 0.75686276, 0.827451, 1)
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wqjhn"]
 bg_color = Color(0.83449477, 0.57886606, 0.64472944, 1)
 border_width_left = 3
@@ -314,12 +297,6 @@ animation = &"sleep"
 
 [node name="BlinkTimer" type="Timer" parent="." unique_id=497023692]
 one_shot = true
-
-[node name="SleepZ" type="AnimatedSprite2D" parent="." unique_id=117999151]
-position = Vector2(153, 28)
-scale = Vector2(0.44824207, 0.4570312)
-sprite_frames = SubResource("SpriteFrames_t5jfb")
-animation = &"sleep_z"
 
 [node name="SleepTimer" type="Timer" parent="." unique_id=1573634539]
 one_shot = true
@@ -374,7 +351,7 @@ theme_override_font_sizes/font_size = 22
 text = "SEVDA'S  SERVICES"
 horizontal_alignment = 1
 
-[node name="MusicButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer" unique_id=1833088847]
+[node name="TodoButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer" unique_id=1833088847]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.47843137, 0.21176471, 0.34117648, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
@@ -383,7 +360,7 @@ theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_y4bq8")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_poyv2")
 theme_override_styles/hover = SubResource("StyleBoxFlat_qnl2n")
-text = "♪  MUSIC
+text = "✓ TO DO LIST
 "
 
 [node name="PomodoroButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer" unique_id=1567225374]
@@ -692,15 +669,74 @@ layout_mode = 2
 
 [node name="ExitCancelButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/ExitPanel/ExitControls" unique_id=778973449]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
 theme_override_fonts/font = ExtResource("16_yukku")
 theme_override_font_sizes/font_size = 18
 text = "CANCEL"
 
 [node name="ExitConfirmButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/ExitPanel/ExitControls" unique_id=237248202]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 8
 theme_override_fonts/font = ExtResource("16_yukku")
 theme_override_font_sizes/font_size = 18
 text = "EXIT"
+
+[node name="TodoPanel" type="VBoxContainer" parent="PetPopup/MarginContainer/VBoxContainer" unique_id=524997140]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="TodoTitleLabel" type="Label" parent="PetPopup/MarginContainer/VBoxContainer/TodoPanel" unique_id=1438522935]
+layout_mode = 2
+mouse_filter = 0
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 20
+text = "TO DO LIST"
+
+[node name="TodoTextEdit" type="TextEdit" parent="PetPopup/MarginContainer/VBoxContainer/TodoPanel" unique_id=1735391574]
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82707775, 0.13428164, 0.5478524, 1)
+theme_override_colors/font_placeholder_color = Color(0.8895348, 0.555084, 0.77448064, 1)
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxFlat_2sjgo")
+placeholder_text = "Sevda is ready to plan with you..."
+wrap_mode = 1
+
+[node name="TodoToolbar" type="HBoxContainer" parent="PetPopup/MarginContainer/VBoxContainer/TodoPanel" unique_id=1129568635]
+layout_mode = 2
+
+[node name="BulletButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/TodoPanel/TodoToolbar" unique_id=881160685]
+custom_minimum_size = Vector2(32, 26)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 22
+text = "≡"
+
+[node name="BottomSpacer" type="Control" parent="PetPopup/MarginContainer/VBoxContainer/TodoPanel" unique_id=2030451402]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="TodoBottomRow" type="HBoxContainer" parent="PetPopup/MarginContainer/VBoxContainer/TodoPanel" unique_id=1877822905]
+layout_mode = 2
+size_flags_vertical = 8
+
+[node name="Spacer" type="Control" parent="PetPopup/MarginContainer/VBoxContainer/TodoPanel/TodoBottomRow" unique_id=715751102]
+layout_mode = 2
+
+[node name="TodoBackButton" type="Button" parent="PetPopup/MarginContainer/VBoxContainer/TodoPanel/TodoBottomRow" unique_id=1800952346]
+custom_minimum_size = Vector2(80, 30)
+layout_mode = 2
+size_flags_horizontal = 10
+size_flags_stretch_ratio = 0.0
+theme_override_fonts/font = ExtResource("16_yukku")
+theme_override_font_sizes/font_size = 18
+text = "BACK
+"
 
 [node name="PomodoroTimer" type="Timer" parent="." unique_id=538518559]
 
@@ -723,18 +759,20 @@ layout_mode = 2
 theme_override_fonts/font = ExtResource("16_yukku")
 theme_override_font_sizes/font_size = 22
 
-[node name="SleepZLeftMarker" type="Marker2D" parent="." unique_id=191916273]
-position = Vector2(150, 61)
+[node name="WaterReminderLeftMarker" type="Marker2D" parent="." unique_id=997334118]
+position = Vector2(121, 71)
 
-[node name="SleepZRightMarker" type="Marker2D" parent="." unique_id=764205286]
-position = Vector2(277, 62)
+[node name="WaterReminderRightMarker" type="Marker2D" parent="." unique_id=918692228]
+position = Vector2(165, 72)
 
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
 [connection signal="animation_finished" from="Sprite2D" to="." method="_on_sprite_2d_animation_finished"]
 [connection signal="timeout" from="BlinkTimer" to="." method="_on_blink_timer_timeout"]
 [connection signal="timeout" from="SleepTimer" to="." method="_on_sleep_timer_timeout"]
 [connection signal="input_event" from="ClickArea" to="." method="_on_click_area_input_event"]
+[connection signal="popup_hide" from="PetPopup" to="." method="_on_pet_popup_popup_hide"]
 [connection signal="gui_input" from="PetPopup/MarginContainer/VBoxContainer/MenuTitle" to="." method="_on_menu_title_gui_input"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/TodoButton" to="." method="_on_todo_button_pressed"]
 [connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/PomodoroButton" to="." method="_on_pomodoro_button_pressed"]
 [connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterButton" to="." method="_on_water_button_pressed"]
 [connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/WaterPanel/PresetRow1/Water200Button" to="." method="_on_water_200_button_pressed"]
@@ -757,5 +795,9 @@ position = Vector2(277, 62)
 [connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/ExitButton" to="." method="_on_exit_button_pressed"]
 [connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/ExitPanel/ExitControls/ExitCancelButton" to="." method="_on_exit_cancel_button_pressed"]
 [connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/ExitPanel/ExitControls/ExitConfirmButton" to="." method="_on_exit_confirm_button_pressed"]
+[connection signal="gui_input" from="PetPopup/MarginContainer/VBoxContainer/TodoPanel/TodoTitleLabel" to="." method="_on_todo_title_label_gui_input"]
+[connection signal="gui_input" from="PetPopup/MarginContainer/VBoxContainer/TodoPanel/TodoTextEdit" to="." method="_on_todo_text_edit_gui_input"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/TodoPanel/TodoToolbar/BulletButton" to="." method="_on_bullet_button_pressed"]
+[connection signal="pressed" from="PetPopup/MarginContainer/VBoxContainer/TodoPanel/TodoBottomRow/TodoBackButton" to="." method="_on_todo_back_button_pressed"]
 [connection signal="timeout" from="PomodoroTimer" to="." method="_on_pomodoro_timer_timeout"]
 [connection signal="timeout" from="WaterReminderTimer" to="." method="_on_water_reminder_timer_timeout"]
